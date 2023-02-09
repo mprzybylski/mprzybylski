@@ -1,3 +1,6 @@
+---
+
+---
 # Hi.  I'm Mike Przybylski.
 
 I'm an electrical engineer by training, and a software and systems engineer by

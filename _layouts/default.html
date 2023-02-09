@@ -8,6 +8,22 @@
     {% include head-custom.html %}
 
 {% seo %}
+  <style>
+    .column {
+      float: left;
+      height: 100%;
+    }
+    
+    .left {
+      width: 250px;
+    }
+    
+    .row:after {
+      content: "";
+      dislay: table;
+      clear: both;
+    }
+  </style>
   </head>
 
   <body>
@@ -28,22 +44,27 @@
         </section>
       </div>
     </header>
-    
-    <div class="container" style="float: left; width: 200px; min-height: 100%">
-      <!-- Post index -->
-      <ul>
-        {% for post in site.posts %}
-          <li>
-            <a href="{{ post.url }}">{{ post.title }}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="container" style="border-left: 200px; width: auto">
-      <section id="main_content">
-        {{ content }}
-      </section>
-    </div>
+      <div class="row">
+        <div class="columnn left">
+          <div class="container">
+            <!-- Post index -->
+            <ul>
+              {% for post in site.posts %}
+                <li>
+                  <a href="{{ post.url }}">{{ post.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div><!-- column left -->
+        <div class="column">
+          <div class="container">
+            <section id="main_content">
+              {{ content }}
+            </section>
+          </div>
+        </div><!-- column -->
+      </div><!-- row -->
     <footer style="clear:left">
       {% include footer.html %}
     </footer>

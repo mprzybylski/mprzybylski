@@ -2,6 +2,7 @@
 layout: post
 title: "bpf-iotrace: Defining Requirements"
 category: libbpf-based tracing from scratch
+tags: Linux software engineering BPF eBPF development performance syscall libbpf filesystems benchmarks fio
 date: 2023-02-12 00:00:00 -0800
 ---
 # Previously

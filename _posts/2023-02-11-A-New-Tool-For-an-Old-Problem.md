@@ -2,6 +2,7 @@
 layout: post
 title: "A New Tool for an Old Problem"
 category: libbpf-based tracing from scratch
+tags: Linux software engineering BPF eBPF development performance syscall libbpf filesystems benchmarks fio
 date: 2023-02-11 09:30:00 -0800
 ---
 

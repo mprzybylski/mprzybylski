@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "`bpf-iotrace`: Defining Requirements"
+title: "bpf-iotrace: Defining Requirements"
 category: libbpf-based tracing from scratch
 date: 2023-02-12 00:00:00 -0800
 ---
@@ -101,6 +101,6 @@ I am thinking of adding time-series file I/O metrics to `bpf-iotrace` as a futur
 Creating a repeatable build environment for eBPF development.
 
 # References
-* https://fio.readthedocs.io/en/latest/fio_doc.html
-* https://www.ietf.org/standards/rfcs/
-* https://www.ietf.org/rfc/rfc2119.txt
+* [https://fio.readthedocs.io/en/latest/fio_doc.html]
+* [https://www.ietf.org/standards/rfcs/]
+* [https://www.ietf.org/rfc/rfc2119.txt]

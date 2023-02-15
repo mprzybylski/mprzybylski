@@ -66,6 +66,6 @@ As I reflected on my journey with eBPF, it occurred to me that the original ques
 Up next: [defining requirements for `bpf-iotrace`]({% post_url 2023-02-12-bpf-iotrace__Defining_Requirements %}).
 
 # Additional References
-* https://android.googlesource.com/platform/external/bcc/+/master/docs/kernel-versions.md
-* https://en.wikipedia.org/wiki/Linux_kernel_version_history
-* https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
+* [https://android.googlesource.com/platform/external/bcc/+/master/docs/kernel-versions.md]
+* [https://en.wikipedia.org/wiki/Linux_kernel_version_history]
+* [https://en.wikipedia.org/wiki/Berkeley_Packet_Filter]

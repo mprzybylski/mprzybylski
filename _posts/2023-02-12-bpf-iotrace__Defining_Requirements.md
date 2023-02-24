@@ -46,6 +46,8 @@ This means `bpf-iotrace` must save its metrics on a per-file basis, but containe
 * A FIO benchmark can be configured to generate a distribution of I/O sizes in a variety of system calls, so `bpf-iotrace` shall record a histogram of size arguments and return values, (usually the number of bytes read or written), for each I/O system call.
 * `bpf-iotrace` shall record a histogram of sequence lengths when it identifies runs of sequential read or write calls.
 * `bpf-iotrace` shall also record the following data on a per-file basis:
+  * Number of times the file was opened
+  * Number of times the file was closed
   * A histogram of the number of bytes written between `fsync()` calls
   * Total bytes read
   * The entry time for the first read system call

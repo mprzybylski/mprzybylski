@@ -48,6 +48,7 @@ This means `bpf-iotrace` must save its metrics on a per-file basis, but containe
 * `bpf-iotrace` shall also record the following data on a per-file basis:
   * Number of times the file was opened
   * Number of times the file was closed
+  * Number of errors on a per-system-call basis
   * A histogram of the number of bytes written between `fsync()` calls
   * Total bytes read
   * The entry time for the first read system call

@@ -8,9 +8,9 @@ date: 2023-02-11 09:30:00 -0800
 
 # Once upon a time...
 
-Around 2016, my colleagues and I were troubleshooting bizarre performance problems with an enterprise observability product.  It was built on a monolithic web application and backed by a single MySQL database which used the InnoDB storage engine to store everything.  The database and web app would start up, merrily ingest data, serve up data requested via the UI... and grind to a halt about an hour later.  Restart the database and web server, and the cycle would repeat.
+Around 2016, my colleagues and I were troubleshooting bizarre performance problems with an application that I will call Monolithic Observability Product for Enterprises, or MOPE.  It was a monolithic web application backed by a single MySQL database which used the InnoDB storage engine to store everything.  The database and web app would start up, merrily ingest data, serve up data requested via the UI... and grind to a halt about an hour later.  Restart the database and web server, and the cycle would repeat.
 
-When we inquired about the platform being used to host Monolithic Observability Product for Enterprises, we learned it was a virtual machine running on a popular hypervisor and backed by SAN storage which was, in turn, backed by rotating media.  (Old-school, spinning hard drives.)  The nature of the storage subsystem immediately made us suspicious about _its_ performance. So we shut down MOPE and ran the IOZone storage benchmark prescribed by MOPE's documentation against the VM.
+When we inquired about the platform being used to host MOPE, we learned it was a virtual machine running on a popular hypervisor and backed by SAN storage which was, in turn, backed by rotating media.  (Old-school, spinning hard drives.)  The nature of the storage subsystem immediately made us suspicious about _its_ performance. So we shut down MOPE and ran the IOZone storage benchmark prescribed by MOPE's documentation against the VM.
 
 IOZone said the storage was fine.
 
@@ -62,7 +62,11 @@ So now, I have time on my hands and a need to market myself for my next paying g
 
 # `bpf-iotrace`
 
-As I reflected on my journey with eBPF, it occurred to me that the original questions that brought eBPF to my attention and the tooling idea that resulted would be the perfect showcase for everything I have learned about eBPF and modern C++ development, so far.  So I am starting up a new open source project called `bpf-iotrace` that will be based on [libbpf](https://github.com/libbpf/libbpf).  This blog will host a series of articles describing the process of building that tool from scratch.
+As I reflected on my journey with eBPF, it occurred to me that the original questions that brought eBPF to my attention and the tooling idea that resulted would be the perfect showcase for everything I have learned about eBPF and modern C++ development, so far.
+
+As I started looking for a good name for the project, I discovered that `ioprof`, `ioperf`, and [`iotrace`](https://github.com/nicolasgross/iotrace) were already taken.  That wasn't necessarily a problem, since I could differentiate my project by prepending `bpf-` to one of those existing names.  When I looked at the capabilities and functionality, I discovered that [`iotrace`](https://github.com/nicolasgross/iotrace) was the closest in functionality to what I wanted to build.  When I took a closer look at it to make sure I wasn't reinventing the wheel, I noted that it used [`ptrace`](https://linux.die.net/man/2/ptrace) to intercept system calls.  Wasn't there a Brendan Gregg article about `ptrace`?  [Yes.  Yes there was.](https://www.brendangregg.com/blog/2014-05-11/strace-wow-much-syscall.html).
+
+Given the overhead inherent in `ptrace`, `iotrace` looks very much like a wheel _worth_ reinventing.  So I am starting up a new open source project called `bpf-iotrace` that will be based on eBPF and [libbpf](https://github.com/libbpf/libbpf).  This blog will host a series of articles describing the process of building that tool from scratch.
 
 Up next: [defining requirements for `bpf-iotrace`]({% post_url 2023-02-12-bpf-iotrace__Defining_Requirements %}).
 

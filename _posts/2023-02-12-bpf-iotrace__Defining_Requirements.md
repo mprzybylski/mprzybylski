@@ -44,21 +44,22 @@ This means `bpf-iotrace` must save its metrics on a per-file basis, but containe
 
 * Since `bpf-iotrace` will be used for troubleshooting, it shall record an error count for each I/O system call.
 * A FIO benchmark can be configured to generate a distribution of I/O sizes in a variety of system calls, so `bpf-iotrace` shall record a histogram of size arguments and return values, (usually the number of bytes read or written), for each I/O system call.
-* `bpf-iotrace` shall also record a histogram of sequence lengths when it identifies runs of sequential reads\ or write calls.
-* `bpf-iotrace` shall record a histogram of the number of bytes written between `fsync()` calls
-* `bpf-iotrace` shall record the total bytes read
-* `bpf-iotrace` shall record the entry time for the first read system call
-* `bpf-iotrace` shall record the return time for the last successful read system call
-* `bpf-iotrace` shall record the total bytes written
-* `bpf-iotrace` shall record the entry time for the first write system call
-* `bpf-iotrace` shall record the return time for the last successful write system call
-* `bpf-iotrace` shall record the total bytes written
-* `bpf-iotrace` shall record total bytes written before the most recent `fsync()` system call
-* `bpf-iotrace` shall record the return time of the most recent `fsync()` system call
-* `bpf-iotrace` shall record the entry time of the first write system call
-* `bpf-iotrace` shall record return time of the last successful write system call
-* `bpf-iotrace` shall record number of times a write was issued to the same file offset as a previous write
-* `bpf-iotrace` shall record a histogram of `fsync()` latencies
+* `bpf-iotrace` shall record a histogram of sequence lengths when it identifies runs of sequential read or write calls.
+* `bpf-iotrace` shall also record the following data on a per-file basis:
+  * A histogram of the number of bytes written between `fsync()` calls
+  * Total bytes read
+  * The entry time for the first read system call
+  * The return time for the last successful read system call
+  * Total bytes written
+  * The entry time for the first write system call
+  * The return time for the last successful write system call
+  * Total bytes written
+  * Total bytes written before the first `fsync()` system call if `fsync()` has only been called once on the file descriptor, or between the two most recent `fsync()` calls, if `fsync()` has been called more than once.
+  * The return time of the most recent `fsync()` system call
+  * The entry time of the first write system call
+  * The return time of the last successful write system call
+  * The number of times a write was issued to the same file offset as a previous write
+  * A histogram of `fsync()` latencies
 
 The above metrics should allow a user to characterize an application's I/O including calculating read and write bandwidths for a single file or an entire directory tree.
 

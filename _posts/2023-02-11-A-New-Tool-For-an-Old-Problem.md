@@ -62,7 +62,7 @@ So now, I have time on my hands and a need to market myself for my next paying g
 
 # `bpf-iotrace`
 
-As I reflected on my journey with eBPF, it occurred to me that the original questions that brought eBPF to my attention and the tooling idea that resulted would be the perfect showcase for everything I have learned about eBPF and modern C++ development, so far.
+As I reflected on my journey with eBPF, it occurred to me that the original questions that brought eBPF to my attention--and the tooling idea that resulted--would be the perfect showcase for everything I have learned about eBPF and modern C++ development so far.
 
 As I started looking for a good name for the project, I discovered that `ioprof`, `ioperf`, and [`iotrace`](https://github.com/nicolasgross/iotrace) were already taken.  That wasn't necessarily a problem, since I could differentiate my project by prepending `bpf-` to one of those existing names.  When I looked at the capabilities and functionality, I discovered that [`iotrace`](https://github.com/nicolasgross/iotrace) was the closest in functionality to what I wanted to build.  When I took a closer look at it to make sure I wasn't reinventing the wheel, I noted that it used [`ptrace`](https://linux.die.net/man/2/ptrace) to intercept system calls.  Wasn't there a Brendan Gregg article about `ptrace`?  [Yes.  Yes there was.](https://www.brendangregg.com/blog/2014-05-11/strace-wow-much-syscall.html).
 

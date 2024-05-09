@@ -16,6 +16,8 @@ tags:
   - "requirements management"
 date: 2023-02-12 00:00:00 -0800
 ---
+!["We WANT... a SHRUBBERY!!!"](/images/KnightWhoSaysNi.jpg)
+
 # Previously
 [A New Tool for an Old Problem]({% post_url 2023-02-11-A-New-Tool-For-an-Old-Problem %})
 

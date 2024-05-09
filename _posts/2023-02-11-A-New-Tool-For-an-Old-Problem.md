@@ -17,7 +17,7 @@ tags:
   - fio
 date: 2023-02-11 09:30:00 -0800
 ---
-
+!["Maybe he's just pining for the fjords"](/images/dead-dolphin.png)
 # Once upon a time...
 
 Around 2016, my colleagues and I were troubleshooting bizarre performance problems with an application that I will call Monolithic Observability Product for Enterprises, or MOPE.  It was a web application backed by a single MySQL database which used the InnoDB storage engine to store everything.  The database and web app would start up, merrily ingest data, serve up data requested via the UI... and grind to a halt about an hour later.  Restart the database and web server, and the cycle would repeat.

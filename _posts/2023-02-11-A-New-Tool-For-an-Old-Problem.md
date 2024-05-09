@@ -2,13 +2,25 @@
 layout: post
 title: "A New Tool for an Old Problem"
 category: libbpf-based tracing from scratch
-tags: Linux software engineering BPF eBPF development performance syscall libbpf filesystems benchmarks fio
+tags: 
+  - Linux
+  - software
+  - engineering
+  - BPF
+  - eBPF
+  - development
+  - performance
+  - syscall
+  - libbpf
+  - filesystems
+  - benchmarks
+  - fio
 date: 2023-02-11 09:30:00 -0800
 ---
 
 # Once upon a time...
 
-Around 2016, my colleagues and I were troubleshooting bizarre performance problems with an application that I will call Monolithic Observability Product for Enterprises, or MOPE.  It was a monolithic web application backed by a single MySQL database which used the InnoDB storage engine to store everything.  The database and web app would start up, merrily ingest data, serve up data requested via the UI... and grind to a halt about an hour later.  Restart the database and web server, and the cycle would repeat.
+Around 2016, my colleagues and I were troubleshooting bizarre performance problems with an application that I will call Monolithic Observability Product for Enterprises, or MOPE.  It was a web application backed by a single MySQL database which used the InnoDB storage engine to store everything.  The database and web app would start up, merrily ingest data, serve up data requested via the UI... and grind to a halt about an hour later.  Restart the database and web server, and the cycle would repeat.
 
 When we inquired about the platform being used to host MOPE, we learned it was a virtual machine running on a popular hypervisor and backed by SAN storage which was, in turn, backed by rotating media.  (Old-school, spinning hard drives.)  The nature of the storage subsystem immediately made us suspicious about _its_ performance. So we shut down MOPE and ran the IOZone storage benchmark prescribed by MOPE's documentation against the VM.
 
@@ -56,7 +68,7 @@ A generalized utility based on this approach could also characterize other datab
 
 Playing with eBPF to shed more light on these questions went on my nerd bucket list while I was fighting other, higher-priority fires and stayed there for several years.  In 2021, I was approached by the founders of a seed-stage startup who wanted to use eBPF to capture networked API traffic.  I accepted the job and spent almost the next two years teaching myself eBPF, Linux kernel internals, and modern C++.  I built an instrumentation product that captured HTTP API requests and responses in bare metal and containerized environments without modifying application code or configurations.  Along the way, I also encountered and solved fascinating problems related to eBPF development, and accumulated a long list of blog post ideas related to those challenges and the techniques I used to overcome them.  
 
-Then I was affected by the epidemic of layoffs impacting the tech industry.
+Since then, I've been laid off twice.
 
 So now, I have time on my hands and a need to market myself for my next paying gig.  Thank goodness for that list of blog post ideas.  Now I just need some code to provide context and examples for those posts...
 
@@ -66,9 +78,10 @@ As I reflected on my journey with eBPF, it occurred to me that the original ques
 
 As I started looking for a good name for the project, I discovered that `ioprof`, `ioperf`, and [`iotrace`](https://github.com/nicolasgross/iotrace) were already taken.  That wasn't necessarily a problem, since I could differentiate my project by prepending `bpf-` to one of those existing names.  When I looked at the capabilities and functionality, I discovered that [`iotrace`](https://github.com/nicolasgross/iotrace) was the closest in functionality to what I wanted to build.  When I took a closer look at it to make sure I wasn't reinventing the wheel, I noted that it used [`ptrace`](https://linux.die.net/man/2/ptrace) to intercept system calls.  Wasn't there a Brendan Gregg article about `ptrace`?  [Yes.  Yes there was.](https://www.brendangregg.com/blog/2014-05-11/strace-wow-much-syscall.html).
 
-Given the overhead inherent in `ptrace`, `iotrace` looks very much like a wheel _worth_ reinventing.  So I am starting up a new open source project called `bpf-iotrace` that will be based on eBPF and [libbpf](https://github.com/libbpf/libbpf).  This blog will host a series of articles describing the process of building that tool from scratch.
+Given the extreme overhead inherent in `ptrace`, `iotrace` looks very much like a wheel _worth_ reinventing.  So I am gradually working on a new open source project called `bpf-iotrace` that will be based on eBPF and [libbpf](https://github.com/libbpf/libbpf).  This blog will host a series of articles describing the process of building that tool from scratch.
 
-Up next: [defining requirements for `bpf-iotrace`]({% post_url 2023-02-12-bpf-iotrace__Defining_Requirements %}).
+# Up next:
+[defining requirements for `bpf-iotrace`]({% post_url 2023-02-12-bpf-iotrace__Defining_Requirements %}).
 
 # Additional References
 * [https://android.googlesource.com/platform/external/bcc/+/master/docs/kernel-versions.md](https://android.googlesource.com/platform/external/bcc/+/master/docs/kernel-versions.md)

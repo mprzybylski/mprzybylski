@@ -2,7 +2,18 @@
 layout: post
 title: "bpf-iotrace: Defining Requirements"
 category: libbpf-based tracing from scratch
-tags: Linux software engineering BPF eBPF development performance syscall libbpf filesystems benchmarks fio
+tags: 
+  - Linux
+  - software
+  - engineering
+  - BPF
+  - eBPF
+  - development
+  - performance
+  - syscall
+  - filesystems
+  - benchmarks
+  - "requirements management"
 date: 2023-02-12 00:00:00 -0800
 ---
 # Previously
@@ -28,7 +39,7 @@ The working draft of `bpf-iotrace`'s requirements may be found [here](https://gi
 # `bpf-iotrace` requirements
 
 ## Target operating system
-Word-of-mouth suggests that Linux v4.14 is the oldest feasible target for a BPF-based utility.  `bpf-iotrace` will also be linked against libc6 v2.27.  So any Linux host with that version of libc6 or newer should be compatible. 
+Word-of-mouth suggests that Linux v4.14 is the oldest feasible target for a BPF-based utility.  `bpf-iotrace` will also be linked against GNU libc v2.26.  So any Linux host with that version of libc6 or newer should be compatible. 
 
 ## Implementation languages
 The languages to be used on a software project are one of the very few "hows" that it makes sense to specify as a requirement since there is moderate coupling between a programming language and its target environment(s).  There may also be personnel, time, or other resource constraints that dictate the selection of a particular programming language.  In the case of `bpf-iotrace`, one of its main objectives is to serve as a demonstration project for libbpf-based application and modern C++ development techniques.  So `bpf-iotrace` will be written in C++, C, and eBPF assembly.
@@ -103,7 +114,7 @@ I am thinking of adding time-series file I/O metrics to `bpf-iotrace` as a futur
 [^3]: Note that we are _not_ specifying the low-level format for `bpf-iotrace`'s output file(s).  Since there are no external constraints like a customer requirement or a downstream platform consuming `bpf-iotrace`'s data, we can leave it up to the implementors to select a format that supports the analysis requirements mentioned above.  If there were customer or consumer constraints, then it would be perfectly appropriate to specify them as requirements.
 
 # Up next
-Creating a repeatable build environment for eBPF development.
+[Creating a Build Environment for libbpf-based Programs]({% post_url 2024-05-09-Creating-a-build-environment-for-libbpf-based-programs %})
 
 # References
 * [https://fio.readthedocs.io/en/latest/fio_doc.html](https://fio.readthedocs.io/en/latest/fio_doc.html)

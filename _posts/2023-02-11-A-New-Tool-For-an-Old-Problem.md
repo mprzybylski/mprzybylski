@@ -68,10 +68,6 @@ A generalized utility based on this approach could also characterize other datab
 
 Playing with eBPF to shed more light on these questions went on my nerd bucket list while I was fighting other, higher-priority fires and stayed there for several years.  In 2021, I was approached by the founders of a seed-stage startup who wanted to use eBPF to capture networked API traffic.  I accepted the job and spent almost the next two years teaching myself eBPF, Linux kernel internals, and modern C++.  I built an instrumentation product that captured HTTP API requests and responses in bare metal and containerized environments without modifying application code or configurations.  Along the way, I also encountered and solved fascinating problems related to eBPF development, and accumulated a long list of blog post ideas related to those challenges and the techniques I used to overcome them.  
 
-Since then, I've been laid off twice.
-
-So now, I have time on my hands and a need to market myself for my next paying gig.  Thank goodness for that list of blog post ideas.  Now I just need some code to provide context and examples for those posts...
-
 # `bpf-iotrace`
 
 As I reflected on my journey with eBPF, it occurred to me that the original questions that brought eBPF to my attention--and the tooling idea that resulted--would be the perfect showcase for everything I have learned about eBPF and modern C++ development so far.

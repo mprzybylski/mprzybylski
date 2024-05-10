@@ -134,10 +134,6 @@ I am thinking of adding text-based user interface, (TUI), reporting and analysis
 ## Time series I/O metrics
 I am thinking of adding time-series file I/O metrics to `bpf-iotrace` as a future enhancement.  If you have ideas or requests for lightweight ways to record that data, and the specific time series metrics you would like to see included, please [let me know here](https://github.com/mprzybylski/bpf-iotrace/discussions/1).
 
-# Footnotes
-[^1]: I'm well aware that these aren't the _only_ options for organizing a complex project, and if you have another favorite, let me know [here](https://github.com/mprzybylski/mprzybylski.github.io/discussions/1)
-[^2]: Note that we are _not_ specifying the low-level format for `bpf-iotrace`'s output file(s).  Since there are no external constraints like a customer requirement or a downstream platform consuming `bpf-iotrace`'s data, we can leave it up to the implementors to select a format that supports the analysis requirements mentioned above.  If there were customer or consumer constraints, then it would be perfectly appropriate to specify them as requirements.
-
 # Up next
 [Creating a Build Environment for libbpf-based Programs]({% post_url 2024-05-09-Creating-a-build-environment-for-libbpf-based-programs %})
 
@@ -145,3 +141,7 @@ I am thinking of adding time-series file I/O metrics to `bpf-iotrace` as a futur
 * [https://fio.readthedocs.io/en/latest/fio_doc.html](https://fio.readthedocs.io/en/latest/fio_doc.html)
 * [https://www.ietf.org/standards/rfcs/](https://www.ietf.org/standards/rfcs/)
 * [https://www.ietf.org/rfc/rfc2119.txt](https://www.ietf.org/rfc/rfc2119.txt)
+
+# Footnotes
+[^1]: I'm well aware that these aren't the _only_ options for organizing a complex project, and if you have another favorite, let me know [here](https://github.com/mprzybylski/mprzybylski.github.io/discussions/1)
+[^2]: Note that we are _not_ specifying the low-level format for `bpf-iotrace`'s output file(s).  Since there are no external constraints like a customer requirement or a downstream platform consuming `bpf-iotrace`'s data, we can leave it up to the implementors to select a format that supports the analysis requirements mentioned above.  If there were customer or consumer constraints, then it would be perfectly appropriate to specify them as requirements.

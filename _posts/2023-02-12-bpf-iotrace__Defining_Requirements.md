@@ -26,30 +26,54 @@ Any software engineering task more complex than a trivial bug fix needs a checkl
 
 The checklist can take any form that works most efficiently for a developer, their team, or their organization.  JIRA issues, ClickUp tasks, or a text or Markdown file on your desktop are all viable options[^1], but writing a good checklist has an even more fundamental pre-requisite: good requirements.
 
-Requirements describe a project's desired end result.  Good requirements are a set of concise and unambiguous statements that focus on _what_ a project or product must do.  Good requirements _shouldn't_ prescribe _how_ a developer or team should implement its requirements.  Those decisions should be left to the experts on the implementing team as much as possible.[^2]
+Requirements describe a project's desired end result.
+Good requirements are a set of concise and unambiguous statements that focus on _what_ a project or product must do.
+Good requirements _shouldn't_ prescribe _how_ a developer or team should implement its requirements.
+Those decisions should be left to the experts on the implementing team as much as possible.
 
-You may be fortunate enough to work with a product or project manager or engineering lead who understands their problem space really well, who can just _hand_ you a nice, cleanly-written, ready-to-implement list of requirements.  If not, don't fret.
+You may be fortunate enough to work with a product or project manager or engineering lead who understands their
+problem space really well, who can just _hand_ you a nice, cleanly written, ready-to-implement list of requirements.
+If not, don't fret.
 
 If you were given any written requirements at all, read them carefully, and do your best to get written clarification of any ambiguities or inconsistencies you find.  Once you feel like you fully understand those requirements, you can break them down into a task list in the best way that works for you or your team.
 
-If you were given a complex software project without any requirements, kick off your design process by writing requirements for yourself based on your understanding of the problem.  Then check in with your stakeholders to see if you are on the right track.  Once you are, you can confidently translate them to a task list as you move on to design and implementation.  This approach also works when you are working solo and developing your own ideas.
+If you were given a complex software project without any requirements,
+kick off your design process by writing requirements for yourself based on your understanding of the problem.
+Then check in with your stakeholders to see if you are on the right track.
+Once you are, you can confidently translate them to a task list as you move on to design and implementation.
+This approach also works when you are working solo and developing your own ideas.
 
-I like to structure my requirements as much as I can like an [IETF RFC](https://www.ietf.org/standards/rfcs/).  Thinking about what functionality a project must deliver in terms of [RFC 2119 keywords](https://www.ietf.org/rfc/rfc2119.txt) has really helped me separate the "whats" of the deliverable from the "hows" of the implementation.
+I like to structure my requirements as much as I can like an [IETF RFC](https://www.ietf.org/standards/rfcs/).
+Thinking about what functionality a project must deliver in terms of
+[RFC 2119 keywords](https://www.ietf.org/rfc/rfc2119.txt) has really helped me separate the "whats"
+of the deliverable from the "hows" of the implementation.
 
 The working draft of `bpf-iotrace`'s requirements may be found [here](https://github.com/mprzybylski/bpf-iotrace/blob/main/REQUIREMENTS.md), and they are discussed in greater detail below.
 
 # `bpf-iotrace` requirements
 
 ## Target operating system
-Word-of-mouth suggests that Linux v4.14 is the oldest feasible target for a BPF-based utility.  `bpf-iotrace` will also be linked against GNU libc v2.26.  So any Linux host with that version of libc6 or newer should be compatible. 
+Word-of-mouth suggests that Linux kernel version 4.14 is the oldest practical target for a BPF-based utility.
+`bpf-iotrace` will also be linked against GNU libc, (glibc), v2.26.
+So any Linux host with that version of glibc or newer should be compatible. 
 
 ## Implementation languages
-The languages to be used on a software project are one of the very few "hows" that it makes sense to specify as a requirement since there is moderate coupling between a programming language and its target environment(s).  There may also be personnel, time, or other resource constraints that dictate the selection of a particular programming language.  In the case of `bpf-iotrace`, one of its main objectives is to serve as a demonstration project for libbpf-based application and modern C++ development techniques.  So `bpf-iotrace` will be written in C++, C, and eBPF assembly.
+There is a moderate amount of coupling between a programming language and its target environment(s).
+Therefore, the languages to be used on a software project are one of the very few "hows"
+that it makes sense to specify as a requirement.
+There may also be personnel, time, 
+or other resource constraints that dictate the selection of a particular programming language.
+In the case of `bpf-iotrace`,
+one of its main goals is to serve as a demonstration project for libbpf-based application
+and modern C++ development techniques.
+So `bpf-iotrace` will be written in C++, C, and eBPF assembly.
 
 ## Output
 `bpf-iotrace` should be able to take an application that is essentially a black box and see where and how it is reading and writing data.  Its output must allow administrators and dev-ops engineers to create filesystems with optimal configurations for hosting that application.  `bpf-iotrace` should also provide the insights necessary to back those filesystems with the most cost-effective storage technologies.  Its output must also inform benchmarks that can rapidly qualify those file systems.
 
-Given that most applications and especially database servers and NoSQL data stores often interact with large directory trees, `bpf-iotrace`'s output must be formatted to allow analysis of I/O data for a top-level directory, an individual file, and everything in between.[^3]
+Given that most applications and especially database servers and NoSQL data stores often interact with large directory trees,
+`bpf-iotrace`'s output must be formatted to allow analysis of I/O data for a top-level directory,
+an individual file, and everything in between.[^2]
 
 This means `bpf-iotrace` must save its metrics on a per-file basis, but containers add an extra wrinkle: how does `bpf-iotrace` reliably identify files in different containers when the file has the same name, (i.e. `ib_logfile0` in two separate MySQL Sever containers on the same Docker host or Kube node)?  This means `bpf-iotrace` must use the mount namespace ID, (i.e. `readlink /proc/<pid>/ns/mnt`), _and_ an absolute path to uniquely identify a file.
 
@@ -112,8 +136,7 @@ I am thinking of adding time-series file I/O metrics to `bpf-iotrace` as a futur
 
 # Footnotes
 [^1]: I'm well aware that these aren't the _only_ options for organizing a complex project, and if you have another favorite, let me know [here](https://github.com/mprzybylski/mprzybylski.github.io/discussions/1)
-[^2]: A project's stakeholders and/or its developers _should_ create documentation on how a project will be implemented.  However, those implementation plans should be discussed, refined, and approved in _design reviews_.  The design review process can be as formal or informal as the stake-holders need or want, but it is incredibly helpful for everyone to be on the same page regarding what a project's requirements _are_ and how they will be satisfied.
-[^3]: Note that we are _not_ specifying the low-level format for `bpf-iotrace`'s output file(s).  Since there are no external constraints like a customer requirement or a downstream platform consuming `bpf-iotrace`'s data, we can leave it up to the implementors to select a format that supports the analysis requirements mentioned above.  If there were customer or consumer constraints, then it would be perfectly appropriate to specify them as requirements.
+[^2]: Note that we are _not_ specifying the low-level format for `bpf-iotrace`'s output file(s).  Since there are no external constraints like a customer requirement or a downstream platform consuming `bpf-iotrace`'s data, we can leave it up to the implementors to select a format that supports the analysis requirements mentioned above.  If there were customer or consumer constraints, then it would be perfectly appropriate to specify them as requirements.
 
 # Up next
 [Creating a Build Environment for libbpf-based Programs]({% post_url 2024-05-09-Creating-a-build-environment-for-libbpf-based-programs %})

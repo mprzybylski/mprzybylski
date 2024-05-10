@@ -42,7 +42,11 @@ So how do we keep this from happening to our projects?
 
 [Statically linking a binary to GNU libc is strongly discouraged](https://stackoverflow.com/questions/57476533/why-is-statically-linking-glibc-discouraged) due to licensing issues and the tight coupling between GNU libc and filesystem layout choices in the Linux distributions where that binary will run.
 
-One common way to make sure a binary works across a whole range of distributions and versions is to build it on the oldest distribution version a developer wants to support.  Generally, the shared libraries that binary depends on [contain additional symbols for backward compatibility](https://developers.redhat.com/blog/2019/08/01/how-the-gnu-c-library-handles-backward-compatibility), so a binary built in this environment should just work, even on the latest and greatest supported distributions.[^2]
+One common way to make sure a binary works across a whole range of Linux distributions
+and versions is to build it on the oldest distribution version a developer wants to support.
+Generally, the shared libraries a binary depends on 
+[contain additional symbols for backward compatibility](https://developers.redhat.com/blog/2019/08/01/how-the-gnu-c-library-handles-backward-compatibility),
+so a binary built in this environment should just work, even on the latest and greatest supported distributions.[^2]
 
 This seems to work well enough until a developer wants to use a newer C++ language standard than what is supported by the distro's bundled version of GCC and libstdc++.  A similar problem arises with clang/LLVM and libbpf/eBPF development: The latest libbpf features are only supported by the latest versions of `clang`.
 
@@ -52,7 +56,7 @@ In a previous job, I've solved the new-compiler-on-an-old-distro problem by buil
 
 # What about installing an old GNU libc in a newer Linux distribution just for development purposes?
 
-[This almost works.](https://stackoverflow.com/a/52550158), but still has some issues due to how tightly coupled GCC is with the GNU libc it was built with.  If I want to minimize my chances of hitting subtle, hard-to-troubleshoot bugs, I will need to build the entire, tightly-coupled toolchain.  This is not a trivial task to do manually, or to script from scratch.  Fortunately, Gentoo has a tool called [`crossdev`](https://gitweb.gentoo.org/proj/crossdev.git/tree/README). There is also the [crosstool-ng](https://crosstool-ng.github.io/) project.  Both utilities can automate the process of building a toolchain with an arbitrary compiler version, GNU libc version, kernel version, and target architecture.  I ended up choosing `crossdev` because it's easier to customize and drive completely as code, and introduces fewer layers of abstraction.  In short, it promises to be more maintainable.
+[This almost works.](https://stackoverflow.com/a/52550158), but still has some issues due to how tightly coupled GCC is with the GNU libc it was built with.  If I want to minimize my chances of hitting subtle, hard-to-troubleshoot bugs, I will need to build the entire, tightly coupled toolchain.  This is not a trivial task to do manually, or to script from scratch.  Fortunately, Gentoo has a tool called [`crossdev`](https://gitweb.gentoo.org/proj/crossdev.git/tree/README). There is also the [crosstool-ng](https://crosstool-ng.github.io/) project.  Both utilities can automate the process of building a toolchain with an arbitrary compiler version, GNU libc version, kernel version, and target architecture.  I ended up choosing `crossdev` because it's easier to customize and drive completely as code, and introduces fewer layers of abstraction.  In short, it promises to be more maintainable.
 
 # Choosing kernel headers and GNU libc versions.
 
@@ -178,7 +182,10 @@ MiB Swap: 131072.0 total, 127837.9 free,   3234.1 used.  11955.5 avail Mem
  123250 root      20   0    3584   1536   1280 R   0.0   0.0   0:00.04 top 
 ```
 
-After spending more time than I would have liked searching the web for an explanation, I discovered that the version of gentoo my development container is based on ships with make 4.4 which is [incompatible with older versions of glibc](https://github.com/crosstool-ng/crosstool-ng/issues/1946).  Worse yet, the gentoo repo doesn't have any make versions prior to 4.4:
+After spending more time than I would have liked searching the web for an explanation,
+I discovered that the version of gentoo my development container is based on ships with make 4.4
+which is [incompatible with older versions of glibc](https://github.com/crosstool-ng/crosstool-ng/issues/1946).
+Worse yet, the gentoo repo doesn't have any versions of make older than 4.4:
 ```text
 19fbddfa0474 /var/db/repos/gentoo/dev-build/make # ls
 Manifest  files  make-4.4.1-r1.ebuild  make-9999.ebuild  metadata.xml
@@ -190,7 +197,8 @@ This time, the toolchain was created successfully.
 
 # Using in a CMake project
 
-To use this toolchain in a CMake project, create a [toolchain file](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html), i.e...
+To use this toolchain in a CMake project,
+create a [toolchain file](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html), i.e.:
 
 `/cmake/project_root/toolchain.cmake`:
 ```
@@ -208,14 +216,18 @@ Additionally, if you happen to be using an IDE like [CLion](https://www.jetbrain
 
 # BPF tooling
 
-In addition to a C/C++ toolchain tailored the majority of your users' environments, you will also need tooling for generating and manipulating eBPF object files.  The LLVM project's Clang compiler is the most mature compiler for generating eBPF objects from C source files.  I also strongly recommend [bpftool](https://github.com/libbpf/bpftool) for post-processing and testing eBPF object files generated by Clang.
+In addition to a C/C++ toolchain tailored to the majority of your users' environments,
+you will also need tooling for generating and manipulating eBPF object files.
+The LLVM project's Clang compiler is the most mature compiler for generating eBPF objects from C source files.
+I also strongly recommend [bpftool](https://github.com/libbpf/bpftool) for post-processing and testing eBPF object files
+generated by Clang.
 
 # Example
 
-A dockerized implementation of this environment can be found at https://github.com/mprzybylski/bpf-iotrace/blob/main/.devcontainer/Dockerfile
+A dockerized implementation of this environment can be found at [https://github.com/mprzybylski/bpf-iotrace/blob/main/.devcontainer/Dockerfile]
 
 # Up next
-Managing dependencies in vcpkg
+[Working with dev containers in CLion]({% post_url 2025-05-10-Working-with-dev-containers-in-CLion %})
 
 # Footnotes
 [^1]: Apologies to [Green Day](https://youtu.be/Soa3gO7tL-c)

@@ -50,7 +50,7 @@ From the InnoDB engine source code, I was able to figure out what simulated page
 
 Figuring out what simulated log writes should look like was a bit more work.  Thanks to Brendan Gregg's excellent [`perf` Examples](https://www.brendangregg.com/perf.html) page, we were able to collect a histogram of InnoDB log write sizes from another busy instance of MOPE.  With that data, I was able to feed some educated guesses to [`fio`](https://fio.readthedocs.io/en/latest/fio_doc.html) and come up with a benchmark that did a much better job at telling us when a MOPE user had provisioned storage that didn't meet requirements.
 
-While the new FIO benchmark made things way better, `perf` could only tell us so much about MySQL's I/O patterns.  Its worst blind spot was that it could tell us virtually nothing about the performance of the asynchronous writes.  It was also difficult to correlate what `perf` could tell us with FIO's benchmark results.  While I was looking for visibility into these blind spots, I started running across articles from Brendan Gregg on an interesting new technology: eBPF.
+While the new fio benchmark made things way better, `perf` could only tell us so much about MySQL's I/O patterns.  Its worst blind spot was that it could tell us virtually nothing about the performance of the asynchronous writes.  It was also difficult to correlate what `perf` could tell us with fio's benchmark results.  While I was looking for visibility into these blind spots, I started running across articles from Brendan Gregg on an interesting new technology: eBPF.
 
 # eBPF
 
@@ -60,7 +60,12 @@ _Extended_ BPF or eBPF showed up in the Linux kernel starting in version 3.18.  
 
 It is important to note that every eBPF program is essentially an event handler.  Javascript developers who have worked on handlers for browser events will be quite familiar with this concept.  For everyone else, think of a custom program that runs every time a button is clicked, or when the mouse pointer rolls over an image.  By Linux kernel version 4.7, it was possible to attach a BPF program to the entry or return event for any kernel function that appears in `/proc/kallsyms`, (this is called a kprobe), or any kernel trace point listed in `/sys/kernel/debug/tracing/events`.  Kprobes and trace points are given pointers to structures containing useful data like the arguments passed into an instrumented function, or that function's return value.
 
-With these enhancements, there are no more blind spots in MySQL's behavior.  All a developer has to do is write and attach eBPF programs for the right syscall trace points and kernel functions, and that developer can get a picture of MySQL's I/O performance that correlates exactly with the performance numbers that a FIO benchmark generates.  Furthermore, a performance engineer can use the data gleaned from those eBPF programs to tune FIO's benchmarking settings to look more like the real MySQL workload for their application.
+With these enhancements, there are no more blind spots in MySQL's behavior.
+All a developer has to do is write and attach eBPF programs for the right syscall trace points and kernel functions.
+Then, that developer can get a picture of MySQL's I/O performance
+that correlates exactly with the performance numbers that a fio benchmark generates.
+Furthermore, a performance engineer can use the data gleaned from those eBPF programs
+to tune fio's benchmarking settings to look more like the real MySQL workload for their application.
 
 A generalized utility based on this approach could also characterize other database servers or NoSQL data stores to improve the accuracy of pre-installation filesystem benchmarks or inform the tuning of a data store's underlying filesystem, (i.e. [ZFS `recordsize`](https://www.percona.com/blog/mysql-zfs-performance-update/)).  This utility would also come in handy for me at home where I could use its output to tune the ZFS datasets underlying the network shares on my home Linux server.
 

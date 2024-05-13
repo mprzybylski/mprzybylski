@@ -91,7 +91,7 @@ By defining [a simple development container in my `rescued-ebuilds` overlay](htt
 I can easily launch a properly configured environment for working on ebuilds any time I need it.
 
 # Up Next
-Managing dependencies in vcpkg
+[Managing dependencies in vcpkg]({% post_url 2024-05-13-Managing-dependencies-in-vcpkg %})
 
 # Additional references
 ## CMake toolchains

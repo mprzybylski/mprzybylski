@@ -22,7 +22,8 @@ date: 2023-02-12 00:00:00 -0800
 [A New Tool for an Old Problem]({% post_url 2023-02-11-A-New-Tool-For-an-Old-Problem %})
 
 # Getting organized
-Any software engineering task more complex than a trivial bug fix needs a checklist.  This is especially true of new projects and new features.
+Any software engineering task more complex than a trivial bug fix needs a checklist.
+This is especially true of new projects and new features.
 
 The checklist can take any form that works most efficiently for a developer, their team, or their organization.  JIRA issues, ClickUp tasks, or a text or Markdown file on your desktop are all viable options[^1], but writing a good checklist has an even more fundamental pre-requisite: good requirements.
 
@@ -48,7 +49,9 @@ Thinking about what functionality a project must deliver in terms of
 [RFC 2119 keywords](https://www.ietf.org/rfc/rfc2119.txt) has really helped me separate the "whats"
 of the deliverable from the "hows" of the implementation.
 
-The working draft of `bpf-iotrace`'s requirements may be found [here](https://github.com/mprzybylski/bpf-iotrace/blob/main/REQUIREMENTS.md), and they are discussed in greater detail below.
+The working draft of `bpf-iotrace`'s requirements may be found 
+[here](https://github.com/mprzybylski/bpf-iotrace/blob/main/REQUIREMENTS.md),
+and they are discussed in greater detail below.
 
 # `bpf-iotrace` requirements
 
@@ -98,7 +101,7 @@ This means `bpf-iotrace` must save its metrics on a per-file basis, but containe
   * The return time of the most recent `fsync()` system call
   * The entry time of the first write system call
   * The return time of the last successful write system call
-  * The number of times a write was issued to the same file offset as a previous write
+  * The number of times a write operation was issued for the same file offset as a previous write
   * A histogram of `fsync()` latencies
 
 The above metrics should allow a user to characterize an application's I/O including calculating read and write bandwidths for a single file or an entire directory tree.
@@ -121,7 +124,8 @@ The above metrics should allow a user to characterize an application's I/O inclu
 
 `bpf-iotrace` shall also include trace point and/or kprobe instrumentation necessary to track asynchronous I/O operations.
 
-The list above is intended to capture every I/O function an application might use to read from or write to a filesystem.  If you think it is missing anything, please [let me know here](https://github.com/mprzybylski/bpf-iotrace/discussions/1).
+The list above is intended to capture every I/O function an application might use to read from or write to a filesystem.
+If you think it is missing anything, please [let me know here](https://github.com/mprzybylski/bpf-iotrace/discussions/1).
 
 ## Filtering
 Another interesting feature of BPF programs is that they will execute _any and every_ time the trace point or kernel function they were attached to is encountered.  This can be incredibly powerful in terms of visibility, but it can also be incredibly _noisy_.  In the case of `read()`, `readv()`, `write()`, `writev()`, and `sendfile()`, those functions can interact with regular files, or file descriptors for sockets, (network I/O).  At the very least, `bpf-iotrace()` instrumentation must ignore network I/O all the time.  More generally, `bpf-iotrace` must only trace I/O operations on named, regular files.

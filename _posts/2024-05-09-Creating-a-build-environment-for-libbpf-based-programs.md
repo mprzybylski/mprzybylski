@@ -22,6 +22,7 @@ tags:
   - "symbol versioning"
 date: 2024-05-09 09:00 -0800
 ---
+![Wall of tools](/images/tool-wall.JPG)
 # Previously
 [bpf-iotrace: Defining Requirements]({% post_url 2023-02-12-bpf-iotrace__Defining_Requirements %})
 
@@ -36,11 +37,16 @@ nginx: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.27' not found (required
 nginx: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.28' not found (required by nginx)
 ```
 
-These errors occur because when a binary is linked against a shared library, those links may be _versioned_.  If the shared library functions, (symbols), our application was linked against are newer than those available in the shared libraries on the system where our application is running now, we will see errors like the ones above.
+These errors occur because when a binary is linked against a shared library, those links may be _versioned_.
+If the shared library functions, (symbols),
+our application was linked against are newer than those available in the shared libraries on the system
+where our application is running now, we will see errors like the ones above.
 
 So how do we keep this from happening to our projects?
 
-[Statically linking a binary to GNU libc is strongly discouraged](https://stackoverflow.com/questions/57476533/why-is-statically-linking-glibc-discouraged) due to licensing issues and the tight coupling between GNU libc and filesystem layout choices in the Linux distributions where that binary will run.
+[Statically linking a binary to GNU libc is strongly discouraged](https://stackoverflow.com/questions/57476533/why-is-statically-linking-glibc-discouraged)
+due to licensing issues and the tight coupling between GNU libc and filesystem layout choices in the Linux distributions
+where that binary will run.
 
 One common way to make sure a binary works across a whole range of Linux distributions
 and versions is to build it on the oldest distribution version a developer wants to support.
@@ -48,23 +54,53 @@ Generally, the shared libraries a binary depends on
 [contain additional symbols for backward compatibility](https://developers.redhat.com/blog/2019/08/01/how-the-gnu-c-library-handles-backward-compatibility),
 so a binary built in this environment should just work, even on the latest and greatest supported distributions.[^2]
 
-This seems to work well enough until a developer wants to use a newer C++ language standard than what is supported by the distro's bundled version of GCC and libstdc++.  A similar problem arises with clang/LLVM and libbpf/eBPF development: The latest libbpf features are only supported by the latest versions of `clang`.
+This seems to work well enough until a developer wants to use a newer C++ language standard than what is supported by
+the distro's bundled version of GCC and libstdc++.
+A similar problem arises with clang/LLVM and libbpf/eBPF development:
+The latest libbpf features are only supported by the latest versions of `clang`.
 
-One naive solution would be to try to install the GCC package from a newer version of the same linux distribution.  This almost worked when trying to install GCC 10.2 from Debian 11 in a Debian 9 container.  Unfortunately, the GCC 10.2 package has a transitive dependency on Debian 11's newer GNU libc package.  This either prevents GCC 10.2 from being installed, or forces Debian 9's GNU libc package to be upgraded.  This, in turn, thwarts the plan to link a project against the oldest GNU `libc` it can get away with.  I've also seen or experienced approaches like this completely breaking other distributions.  ["The only winning move is not to play."](https://www.youtube.com/watch?v=MpmGXeAtWUw)
+One naive solution would be to try to install the GCC package from a newer version of the same linux distribution.
+This almost worked when trying to install GCC 10.2 from Debian 11 in a Debian 9 container.
+Unfortunately, the GCC 10.2 package has a transitive dependency on Debian 11's newer GNU libc package.
+This either prevents GCC 10.2 from being installed, or forces Debian 9's GNU libc package to be upgraded.
+This, in turn, thwarts the plan to link a project against the oldest GNU `libc` it can get away with.
+I've also seen or experienced approaches like this completely breaking other distributions.
+["The only winning move is not to play."](https://www.youtube.com/watch?v=MpmGXeAtWUw)
 
-In a previous job, I've solved the new-compiler-on-an-old-distro problem by building a newer version of GCC from source in a container.  However, there is another problem with building a project on an ancient distribution: It is more likely to have unpatched security vulnerabilities and/or grossly out-of-date OpenSSL, OpenSSH, etc.
+In a previous job, I've solved the new-compiler-on-an-old-distro problem by building a newer version of GCC from source
+in a container.
+However, there is another problem with building a project on an ancient distribution:
+It is more likely to have unpatched security vulnerabilities and/or grossly out-of-date OpenSSL, OpenSSH, etc.
 
 # What about installing an old GNU libc in a newer Linux distribution just for development purposes?
 
-[This almost works.](https://stackoverflow.com/a/52550158), but still has some issues due to how tightly coupled GCC is with the GNU libc it was built with.  If I want to minimize my chances of hitting subtle, hard-to-troubleshoot bugs, I will need to build the entire, tightly coupled toolchain.  This is not a trivial task to do manually, or to script from scratch.  Fortunately, Gentoo has a tool called [`crossdev`](https://gitweb.gentoo.org/proj/crossdev.git/tree/README). There is also the [crosstool-ng](https://crosstool-ng.github.io/) project.  Both utilities can automate the process of building a toolchain with an arbitrary compiler version, GNU libc version, kernel headers version, and target architecture.  I ended up choosing `crossdev` because it's easier to customize and drive completely as code, and introduces fewer layers of abstraction.  In short, it promises to be more maintainable.
+[This almost works.](https://stackoverflow.com/a/52550158),
+but still has some issues due to how tightly coupled GCC is with the GNU libc it was built with.
+If I want to minimize my chances of hitting subtle, hard-to-troubleshoot bugs,
+I will need to build the entire, tightly coupled toolchain.
+This is not a trivial task to do manually, or to script from scratch.
+Fortunately, Gentoo has a tool called [`crossdev`](https://gitweb.gentoo.org/proj/crossdev.git/tree/README).
+There is also the [crosstool-ng](https://crosstool-ng.github.io/) project.
+Both utilities can automate the process of building a toolchain with an arbitrary compiler version,
+GNU libc version, kernel headers version, and target architecture.
+I ended up choosing `crossdev` because it's easier to customize and drive completely as code,
+and introduces fewer layers of abstraction.
+In short, it promises to be more maintainable.
 
 # Choosing kernel headers and GNU libc versions.
 
-eBPF gained enough features to start being truly useful around Linux kernel version 4.14.  So I wanted to build a toolchain that works with a vendor-supported Linux distribution with the oldest GNU libc and a kernel version >= 4.14.  The oldest combination of kernel and GNU libc I could find is Amazon Linux 2 with [GNU libc 2.26](https://docs.aws.amazon.com/AL2/latest/relnotes/relnotes.html#c-runtime) and [Linux kernel v4.14](https://docs.aws.amazon.com/linux/al2/ug/aml2-kernel.html).  (If you find a vendor-supported Linux distribution with Linux kernel >= 4.14 and an even older version of GNU libc, please file an [issue](https://github.com/mprzybylski/bpf-iotrace/issues), and let me know.)
+eBPF gained enough features to start being truly useful around Linux kernel version 4.14.
+So I wanted to build a toolchain that works with a vendor-supported Linux distribution with the oldest GNU libc
+and a kernel version >= 4.14.
+The oldest combination of kernel and GNU libc I could find is
+Amazon Linux 2 with [GNU libc 2.26](https://docs.aws.amazon.com/AL2/latest/relnotes/relnotes.html#c-runtime) and [Linux kernel v4.14](https://docs.aws.amazon.com/linux/al2/ug/aml2-kernel.html).
+(If you find a vendor-supported Linux distribution with Linux kernel >= 4.14 and an even older version of GNU libc,
+please file an [issue](https://github.com/mprzybylski/bpf-iotrace/issues), and let me know.)
 
 # Trial and error with `crossdev` in docker
 
-Armed with the kernel headers and glibc versions I needed to support, and the [crossdev documentation](https://wiki.gentoo.org/wiki/Crossdev), I set about creating a gentoo docker container and attempting to create my toolchain...
+Armed with the kernel headers and glibc versions I needed to support, and the [crossdev documentation](https://wiki.gentoo.org/wiki/Crossdev),
+I set about creating a gentoo docker container and attempting to create my toolchain...
 
 ```shell
 ad25027d037a / # crossdev --target x86_64-generic-linux-gnu --gcc '~14.1.0' --libc '~2.26' --kernel '~4.14' --ex-gdb
@@ -146,13 +182,25 @@ For more information, see the MASKED PACKAGES section in the emerge
 man page or refer to the Gentoo Handbook.
 ```
 
-First, the gentoo docker container doesn't have the necessary privileges to allow `emerge` to call [`unshare`](https://linux.die.net/man/1/unshare).  Second, it looks like gentoo doesn't package GNU libc version 2.26.
+First, the gentoo docker container doesn't have the necessary privileges to allow `emerge` to call 
+[`unshare`](https://linux.die.net/man/1/unshare).
+Second, it looks like gentoo doesn't package GNU libc version 2.26.
 
-The permissions issue can be solved by running a privileged docker container, or by prefixing the `emerge` command with `FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox"`.  (The latter method is preferable in for use in `Dockerfile`s.)
+The permissions issue can be solved by running a privileged docker container, or by prefixing the `emerge` command with
+`FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox"`.
+(The latter method is preferable in for use in `Dockerfile`s.)
 
-The most maintainable way to solve the missing GNU libc version is to [create an overlay repository](https://flewkey.com/blog/2021-03-29-gentoo-overlays-for-noobs.html) with the missing ebuilds.  To create an ebuild file for glibc 2.26, I started with a copy of [the 2.39 version](https://gitweb.gentoo.org/repo/gentoo.git/tree/sys-libs/glibc/glibc-2.39-r5.ebuild), and modified it to build version 2.26.  This included generating a patch set from [gentoo's fork of the GNU libc repository](https://gitweb.gentoo.org/fork/glibc.git/refs/).
+The most maintainable way to solve the missing GNU libc version is to
+[create an overlay repository](https://flewkey.com/blog/2021-03-29-gentoo-overlays-for-noobs.html) with the missing ebuilds.
+To create an ebuild file for glibc 2.26,
+I started with a copy of [the 2.39 version](https://gitweb.gentoo.org/repo/gentoo.git/tree/sys-libs/glibc/glibc-2.39-r5.ebuild),
+and modified it to build version 2.26. 
+This included generating a patch set from
+[gentoo's fork of the GNU libc repository](https://gitweb.gentoo.org/fork/glibc.git/refs/).
 
-After adding the overlay repository with `eselect repository add rescued-ebuilds git https://github.com/mprzybylski/rescued-ebuilds.git && emerge --sync rescued-ebuilds`, I tried again with...
+After adding the overlay repository with
+`eselect repository add rescued-ebuilds git https://github.com/mprzybylski/rescued-ebuilds.git && emerge --sync rescued-ebuilds`,
+I tried again with...
 ```shell
 FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox" \
         crossdev --target x86_64-generic-linux-gnu --gcc '~14.1.0' \
@@ -191,9 +239,13 @@ Worse yet, the gentoo repo doesn't have any versions of make older than 4.4:
 Manifest  files  make-4.4.1-r1.ebuild  make-9999.ebuild  metadata.xml
 ```
 
-Fortunately, the gentoo repository did have earlier versions of `make` [at some point](https://gitweb.gentoo.org/repo/gentoo.git/commit/dev-build/make?id=7ef71dd2f0e15a353a958b2572de2f2c353c6afb).  So I copied `make-4.3-r1.ebuild` and its related patches to [rescued-ebuilds](https://github.com/mprzybylski/rescued-ebuilds/tree/main/dev-build/make) and added `<dev-build/make-4.4` to the `BDEPEND` variable in [glibc-2.26-r7.ebuild](https://github.com/mprzybylski/rescued-ebuilds/blob/main/sys-libs/glibc/glibc-2.26-r7.ebuild), ran `emerge --sync rescued-ebuilds` in my development container, and tried again.
+Fortunately, the gentoo repository did have earlier versions of `make` 
+[at some point](https://gitweb.gentoo.org/repo/gentoo.git/commit/dev-build/make?id=7ef71dd2f0e15a353a958b2572de2f2c353c6afb).
+So I copied `make-4.3-r1.ebuild` and its related patches to [rescued-ebuilds](https://github.com/mprzybylski/rescued-ebuilds/tree/main/dev-build/make)
+and added `<dev-build/make-4.4` to the `BDEPEND` variable in [glibc-2.26-r7.ebuild](https://github.com/mprzybylski/rescued-ebuilds/blob/main/sys-libs/glibc/glibc-2.26-r7.ebuild),
+ran `emerge --sync rescued-ebuilds` in my development container, and tried again.
 
-This time, the toolchain was created successfully.
+This time, the toolchain built successfully.
 
 # Using in a CMake project
 
@@ -208,11 +260,14 @@ set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}-gcc)
 set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
 ```
 
-...and add `set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)` to the top-level `CMakeLists.txt` _before_ the first `project()` command.
+...and add `set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)` to the top-level `CMakeLists.txt`
+_before_ the first `project()` command.
 
-This will automatically build your project against the correct GNU libc and Linux kernel headers and produce binaries that are compatible with any Linux distribution with glibc 2.26 or newer.
+This will automatically build your project against the correct GNU libc and Linux kernel headers and produce binaries
+that are compatible with any Linux distribution with glibc 2.26 or newer.
 
-Additionally, if you happen to be using an IDE like [CLion](https://www.jetbrains.com/clion/), CLion will automagically pick up the correct compilers and header files.
+Additionally, if you happen to be using an IDE like [CLion](https://www.jetbrains.com/clion/), CLion will automagically
+pick up the correct compilers and header files.
 
 # BPF tooling
 
@@ -232,4 +287,5 @@ A dockerized implementation of this environment can be found at
 
 # Footnotes
 [^1]: Apologies to [Green Day](https://youtu.be/Soa3gO7tL-c)
-[^2]: "доверяй, но проверяй", _("Trust, but verify.")_: Any project built this way still needs to be tested thoroughly against any Linux distribution version it claims to support.
+[^2]: "доверяй, но проверяй", _("Trust, but verify.")_: Any project built this way still needs to be tested thoroughly
+against any Linux distribution version it claims to support.

@@ -101,8 +101,49 @@ endif()
 ```
 
 Now, even on a fresh git clone of `bpf-iotrace`, CMake will download `vcpkg` to the correct directory, and bootstrap
-it and all the project's other dependencies at configuration time.
+it--and all the project's other dependencies--at configuration time.
 It will also use the dev container's custom toolchain to build the main project.
+
+## Manifest mode
+`vcpkg` has two modes for managing dependencies: "classic,"
+and "[manifest](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode)."
+`vcpkg` documentation recommends manifest mode for new projects
+which--along with installing `vcpkg` as a submodule--allows a project to be completely self-contained.
+
+The manifest they are talking about is
+[`vcpkg.json`](https://learn.microsoft.com/en-us/vcpkg/reference/vcpkg-json#dependency) and `bpf-iotrace` uses it to
+declare its dependencies:
+
+```json
+{
+  "dependencies": [
+    "libbpf"
+  ],
+  "overrides": [
+    {
+      "name": "libbpf",
+      "version": "1.4.1#8"
+    }
+  ],
+  "builtin-baseline": "943c5ef1c8f6b5e6ced092b242c8299caae2ff01"
+}
+```
+
+In the spirit of "[Include what you use](https://google.github.io/styleguide/cppguide.html#Include_What_You_Use)" from
+Google's excellent [C++ style guide](https://google.github.io/styleguide/cppguide.html), `bpf-iotrace` declares its
+direct dependencies and _only_ its direct dependencies in `vcpkg.json`.
+This means that if a directly included package depends on other software,
+_its_ `vcpkg.json` needs to declare those dependencies, and so on.
+Conversely, if we find we start directly using a library that `vcpkg` already brought in as a transitive dependency,
+we need to declare it directly in
+[`bpf-iotrace/vcpkg.json`](https://github.com/mprzybylski/bpf-iotrace/blob/main/vcpkg.json).
+
+Also note that `bpf-iotrace` uses the `overrides` key in `vcpkg.json` to pin its dependency versions.
+This is intended to make builds more deterministic by preventing `vcpkg` from automatically pulling in the latest
+release of a dependency.
+
+In a future post, I will write about an automated workflow for updating explicitly versioned dependencies
+with review and approval gates to help developers avoid nasty surprises.
 
 # Overlays in vcpkg
 
@@ -162,6 +203,37 @@ The process of publishing or updating a port published in a `vcpkg` registry is
 [complex](https://learn.microsoft.com/en-us/vcpkg/maintainers/registries) enough to make rapid iteration difficult.
 `vcpkg`'s [overlay ports](https://learn.microsoft.com/en-us/vcpkg/concepts/overlay-ports) feature makes it possible to
 quickly test new ports, or changes to an existing port before publishing them to a registry.
+
+# Results
+
+After configuring the `bpf-iotrace` project with CMake, we see vcpkg has installed headers
+and a statically linkable archive library for `libbpf` as well as headers and binary libraries
+for `libbpf`'s transitive dependencies.
+
+```
+mikep@b593cb81e890 /IdeaProjects/bpf-iotrace/cmake-build-debug/vcpkg_installed/x64-linux $ ls
+debug  etc  include  lib  share  tools
+```
+
+```
+mikep@b593cb81e890 /IdeaProjects/bpf-iotrace/cmake-build-debug/vcpkg_installed/x64-linux $ ls include
+bpf      dwarf.h   gelf.h    lzma    nlist.h  zdict.h  zstd.h
+bzlib.h  elfutils  libelf.h  lzma.h  zconf.h  zlib.h   zstd_errors.h
+```
+
+```
+mikep@b593cb81e890 /IdeaProjects/bpf-iotrace/cmake-build-debug/vcpkg_installed/x64-linux $ ls include/bpf
+bpf.h            bpf_endian.h       bpf_helpers.h  btf.h     libbpf_common.h  libbpf_version.h  usdt.bpf.h
+bpf_core_read.h  bpf_helper_defs.h  bpf_tracing.h  libbpf.h  libbpf_legacy.h  skel_internal.h
+```
+
+```
+mikep@b593cb81e890 /IdeaProjects/bpf-iotrace/cmake-build-debug/vcpkg_installed/x64-linux $ ls lib
+libasm-0.186.so  libbz2.so               libdebuginfod.so    libdw.so.1       liblzma.a
+libasm.so        libbz2.so.1.0           libdebuginfod.so.1  libelf-0.186.so  libz.a
+libasm.so.1      libbz2.so.1.0.8         libdw-0.186.so      libelf.so        libzstd.a
+libbpf.a         libdebuginfod-0.186.so  libdw.so            libelf.so.1      pkgconfig
+```
 
 # Up next
 Packaging libbpf for vcpkg.

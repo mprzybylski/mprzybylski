@@ -112,7 +112,8 @@ sure I wasn't reinventing the wheel, I noted that it used [`ptrace`](https://lin
 Brendan Gregg article about `ptrace`?  [Yes. Yes, there was.](https://www.brendangregg.com/blog/2014-05-11/strace-wow-much-syscall.html).
 
 Given the extreme overhead inherent in `ptrace`, `iotrace` looks very much like a wheel _worth_ reinventing.
-So I am gradually working on a new open source project called `bpf-iotrace` that will be based on eBPF and [libbpf](https://github.com/libbpf/libbpf).  This blog will host a series of articles describing the process of building that tool from scratch.
+So I am gradually working on a new open source project called `bpf-iotrace` that will be based on eBPF and [libbpf](https://github.com/libbpf/libbpf).
+This blog will host a series of articles describing the process of building that tool from scratch.
 
 # Up next:
 [defining requirements for `bpf-iotrace`]({% post_url 2023-02-12-bpf-iotrace__Defining_Requirements %}).

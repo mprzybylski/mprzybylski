@@ -125,7 +125,8 @@ The above metrics should allow a user to characterize an application's I/O inclu
 `bpf-iotrace` shall also include trace point and/or kprobe instrumentation necessary to track asynchronous I/O operations.
 
 The list above is intended to capture every I/O function an application might use to read from or write to a filesystem.
-If you think it is missing anything, please [let me know here](https://github.com/mprzybylski/bpf-iotrace/discussions/1).
+If you think it is missing anything,
+please [let me know here](https://github.com/mprzybylski/bpf-iotrace/discussions/1).
 
 ## Filtering
 Another interesting feature of BPF programs is that they will execute _any and every_ time the trace point or kernel function they were attached to is encountered.  This can be incredibly powerful in terms of visibility, but it can also be incredibly _noisy_.  In the case of `read()`, `readv()`, `write()`, `writev()`, and `sendfile()`, those functions can interact with regular files, or file descriptors for sockets, (network I/O).  At the very least, `bpf-iotrace()` instrumentation must ignore network I/O all the time.  More generally, `bpf-iotrace` must only trace I/O operations on named, regular files.

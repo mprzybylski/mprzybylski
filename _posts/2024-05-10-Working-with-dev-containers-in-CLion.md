@@ -57,30 +57,38 @@ which tells CMake the names of compilers in container's custom toolchain.
 
 # CLion and development containers in action
 
-The most direct method for launching a CLion IDE in a development container is to start from
-[JetBrains Gateway](https://www.jetbrains.com/remote-development/gateway/)
-
-![JetBrains Gateway Home Window](/images/Working-with-dev-containers-in-CLion/JetBrainsGatewayHomeWindow.png)
-
 CLion can work with development containers in two modes: cloning a project directly into a container,
 or mounting a local project in a container.
 I prefer the latter because it makes it easier to throw away a container after a failed experiment without losing work.
 
-![New dev container from local project](/images/Working-with-dev-containers-in-CLion/NewDevContainerLocalProject.png)
+So far,
+the only way I've found to launch a development container with local sources mounted in it from a JetBrains product is
+to open the project's `devcontainer.json` in a local instance of CLion...
 
-Once the development container image is fetched and/or built, you can choose the IDE you want to run in it.
+![devcontainer.json open in local CLion](/images/Working-with-dev-containers-in-CLion/project_with_dot_devcontainer_open.png)
 
-![IDE selection step](/images/Working-with-dev-containers-in-CLion/BuildingDevContainer.png)
+...and then click the ![create dev container](/images/Working-with-dev-containers-in-CLion/create_dev_container_button.png)
+button in the editor's left-hand gutter.
 
-After clicking `Continue`,
-Gateway will launch a remote backend in the container and connect to it from your local CLion front-end.
+![create dev container menu](/images/Working-with-dev-containers-in-CLion/project_with_create_dev_container_menu.png)
 
-The last step is opening the "Project" tab in the left-hand toolbar,
-right-clicking `CMakeLists.txt`, and selecting `Load CMake Project`.
+I then select "Create Dev Container and Mount Sources..."
 
-![Load CMake Project](/images/Working-with-dev-containers-in-CLion/LoadCMakeProject.png)
+This builds the development container.
+The process can take a significant amount of time since it has to build GCC,
+Clang, and other associated tooling and libraries from source.
+(I have plans to speed up this process by building most of the development container in GitHub Actions and hosting
+its image in GitHub's Container Registry.)
 
-CLion will then launch CMake to configure the project, identify the build targets, and index the source code.
+![dev container build complete](/images/Working-with-dev-containers-in-CLion/building-dev-container-complete.png)
+
+Once the build is complete, I make sure CLion is selected in the drop-down menu at the top of the window, and click the
+"Continue" button.
+This launches the CLion remote development backend in the development container and connects to it with an
+instance of JetBrains Client running on my laptop.
+Note the bpf-iotrace source code mounted in my container from my home directory.
+
+![project in dev container](/images/Working-with-dev-containers-in-CLion/project_in_dev_container.png)
 
 # Another development container use case: software packaging for non-native Linux distributions
 My daily driver for this work is an x86_64 laptop running Debian 12.
@@ -94,10 +102,13 @@ I can easily launch a properly configured environment for working on ebuilds any
 [Managing dependencies in vcpkg]({% post_url 2024-05-13-Managing-dependencies-in-vcpkg %})
 
 # Additional references
+
 ## CMake toolchains
 * [CMake toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
+
 ## Development Containers
 * [Specification](https://containers.dev/implementors/spec/)
 * [Other tools that support development containers](https://containers.dev/supporting)
+
 ## Development Containers in CLion
 * https://www.jetbrains.com/help/clion/prerequisites-for-dev-containers.html

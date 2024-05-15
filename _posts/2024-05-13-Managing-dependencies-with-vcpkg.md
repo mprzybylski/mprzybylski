@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Managing dependencies in vcpkg"
+title: "Managing dependencies with vcpkg"
 category: libbpf-based tracing from scratch
 tags:
 - Linux

@@ -236,4 +236,4 @@ libbpf.a         libdebuginfod-0.186.so  libdw.so            libelf.so.1      pk
 ```
 
 # Up next
-Packaging libbpf for vcpkg.
+[Packaging libbpf with vcpkg]({% post_url 2024-05-15-Packaging-libbpf-with-vcpkg %})

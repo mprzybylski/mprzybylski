@@ -90,6 +90,32 @@ Note the bpf-iotrace source code mounted in my container from my home directory.
 
 ![project in dev container](/images/Working-with-dev-containers-in-CLion/project_in_dev_container.png)
 
+# Reopening a CLion project in an existing development container
+After a workstation restart or similar event,
+there are two ways to reopen a CLion project in an existing development container.
+
+## Via JetBrains Gateway
+
+Open the [JetBrains Gateway](https://www.jetbrains.com/remote-development/gateway/) application
+
+![JetBrains Gateway home screen](/images/Working-with-dev-containers-in-CLion/JetBrainsGateway.png)
+
+Select "Dev Containers" in the right-hand column.
+
+Click on the menu item for the development container you want to open.
+
+## Via CLion
+
+Select "Remote Development..." from the File menu.
+
+![CLion -> File -> Remote Development...](/images/Working-with-dev-containers-in-CLion/CLionFileMenuRemoteDevelopment.png)
+
+Select "Dev Containers" in the left-hand column.
+
+![Clion Remote Development window](/images/Working-with-dev-containers-in-CLion/CLionRemoteDevelopmentWindow.png)
+
+Click on the development container you wish to use.
+
 # Another development container use case: software packaging for non-native Linux distributions
 My daily driver for this work is an x86_64 laptop running Debian 12.
 This made it challenging to work on gentoo packages

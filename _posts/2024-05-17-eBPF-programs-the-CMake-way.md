@@ -14,7 +14,7 @@ tags:
   - CMake
   - clang
   - bpftool
-date: 2024-05-17 21:00 -0800
+date: 2024-05-17 09:00 -0800
 ---
 ![eBPF / CMake logo mashup](/images/ebpf-the-cmake-way.png)
 

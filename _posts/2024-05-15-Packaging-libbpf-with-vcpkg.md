@@ -23,7 +23,7 @@ date: 2024-05-15 09:00 -0800
 In the interest of maintainability, I want [vcpkg](https://vcpkg.github.io/) to be 
 [bpf-iotrace](https://github.com/mprzybylski/bpf-iotrace)'s one-stop shop for managing third-party code.
 Since vcpkg's default registry doesn't include [libbpf](https://github.com/libbpf/libbpf),
-I will need to package it the vcpkg way, myself.
+I will need to package it myself the vcpkg way.
 
 I'll make an educated guess that the biggest reason `libbpf` isn't already in the default `vcpkg` registry is that its
 build procedure diverges pretty sharply from what is typical for a Makefile-based open source project.
@@ -122,4 +122,4 @@ However, I will still temporarily copy in
 I want to test changes or fixes my `libbpf` `vcpkg` port.
 
 # Up next
-eBPF programs the CMake way
+[eBPF programs the CMake way]({% post_url 2024-05-17-eBPF-programs-the-CMake-way %})

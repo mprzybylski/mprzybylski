@@ -14,6 +14,7 @@ tags:
   - CMake
   - clang
   - bpftool
+# Watch out for timestamps that are the next day, UTC
 date: 2024-05-17 09:00 -0800
 ---
 ![eBPF / CMake logo mashup](/images/ebpf-the-cmake-way.png)
@@ -57,7 +58,7 @@ to limit the effects of these overrides to just the locations where they are nee
    will reject programs with backward jumps, (loops).
    (Even in newer kernels, the verifier requires a loop to have a finite trip count.)
    The solution for eBPF programs written in C is to add `#pragma clang loop unroll(full)` just above the beginning
-   of the loop statement to have compiler unroll those loops.
+   of the loop statement to have the compiler unroll those loops.
    (See [Clang's documentation](https://clang.llvm.org/docs/LanguageExtensions.html#loop-unrolling) for more
    information.)
    If the compiler _fails_ to unroll a loop (usually because it can't determine a finite trip count from the loop's
@@ -89,7 +90,7 @@ To build eBPF code with a CMake target, we have to use the
 signature of `add_library()`
 
 There should be one CMake target per C file, and the C file and the target should have the same base name,
-i.e. `read.c` is built by a CMake target called `read`, i.e.
+i.e. `read.c` is built by a CMake target called `read`:
 
 ```
 add_library(read OBJECT read.c read.h)
@@ -136,7 +137,7 @@ add_custom_target(bpf_skeleton DEPENDS bpf-skeleton.h)
 
 # A DRY (Don't Repeat Yourself) CMakeLists.txt
 Most eBPF projects are going to implement several eBPF programs.
-Each program will require adding an...
+Each C file containing an eBPF program will require adding an...
 ```
 add_library(... OBJECT ...)
 ```

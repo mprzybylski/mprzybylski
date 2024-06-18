@@ -75,7 +75,7 @@ to limit the effects of these overrides to just the locations where they are nee
 
 # File organization
 My favorite way to organize an eBPF project is by program entry point.
-For system call tracepoints, this means one `.c` and `.h` file per system call, i.e. `read.c` and `read.h` or
+For system call tracepoints, this means one `.c` and `.h` file per system call, i.e. `read.bpf.c` and `read.bpf.h` or
 `execve.c` and `execve.h`.
 Entry and exit handler programs should live in the same source file.  Common helper functions should live in
 separate header files.
@@ -90,13 +90,13 @@ To build eBPF code with a CMake target, we have to use the
 signature of `add_library()`
 
 There should be one CMake target per C file, and the C file and the target should have the same base name,
-i.e. `read.c` is built by a CMake target called `read`:
+i.e. `read.bpf.c` is built by a CMake target called `read.bpf`:
 
 ```
-add_library(read OBJECT read.c read.h)
+add_library(read OBJECT read.bpf.c read.bpf.h)
 ```
 
-This passes `read.c` to `clang -c` which compiles and assembles the file, but stops short of linking.
+This passes `read.bpf.c` to `clang -c` which compiles and assembles the file, but stops short of linking.
 
 To do the equivalent of linking an eBPF project,
 we need to write some explicit post-processing steps into our `CMakeLists.txt`.
@@ -173,4 +173,4 @@ Once this scaffolding is set up around your eBPF code, it should be easy to add 
 in a maintainable way.
 
 # Up next
-A simple eBPF program
+[A simple pair of eBPF tracepoint handlers]({% post_url 2024-06-17-A-simple-pair-of-eBPF-tracepoint-handlers %})

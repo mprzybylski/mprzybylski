@@ -287,5 +287,4 @@ A dockerized implementation of this environment can be found at
 
 # Footnotes
 [^1]: Apologies to [Green Day](https://youtu.be/Soa3gO7tL-c)
-[^2]: "доверяй, но проверяй", _("Trust, but verify.")_: Any project built this way still needs to be tested thoroughly
-against any Linux distribution version it claims to support.
+[^2]: "доверяй, но проверяй", _("Trust, but verify.")_: Any project built this way still needs to be tested thoroughly against any Linux distribution version it claims to support.

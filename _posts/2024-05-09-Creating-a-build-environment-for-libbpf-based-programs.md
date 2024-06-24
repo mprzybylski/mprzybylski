@@ -2,6 +2,8 @@
 layout: post
 title: "Creating a Build Environment for libbpf-based Programs"
 category: libbpf-based tracing from scratch
+redirect_from:
+  - /creating-a-build-environment-for-libbpf-based-programs
 tags: 
   - Linux
   - software

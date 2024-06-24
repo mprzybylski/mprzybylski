@@ -2,6 +2,7 @@
 layout: post
 title: "Working with dev containers in CLion"
 category: libbpf-based tracing from scratch
+redirect_from: /working-with-dev-containers-in-clion
 tags:
 - Linux
 - software
